@@ -93,7 +93,10 @@ async function main(repoPath, remoteName, mongoUri, mongoDb) {
         };
         commitDetails.subject = git(`show -s --format='%s' ${commitHash}`, repoPath);
         commitDetails.body = git(`show -s --format='%b' ${commitHash}`, repoPath);
-        commitDetails.isMergePR = (/^\s*(Merged\s+)?PR\s+\d+:/mi).test(commitDetails.subject);
+
+        // check special commits
+        commitDetails.isPR = (/^\s*(Merged\s+)?PR\s+\d+:/mi).test(commitDetails.subject);
+        commitDetails.isMerge = !commitDetails.isPR && (/Merge/mi).test(commitDetails.subject);
 
         // generate id
         commitDetails._id = `${commitDetails.repo}-${commitDetails.remote}-${commitDetails.hash}`;
